@@ -16,7 +16,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # Set your Hugging Face API key
-HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "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")
+HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "your own HG Token")
 
 # Configure the Llama index settings
 Settings.llm = HuggingFaceInferenceAPI(
