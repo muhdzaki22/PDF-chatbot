@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .left {
+            flex: 1;
+            max-width: 40%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        .right {
+            flex: 2;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 60%;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .messages {
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .messages div {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+        .user {
+            background-color: #007bff;
+            color: white;
+            text-align: right;
+        }
+        .assistant {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>PDF Chatbot</h1>
+            <form id="pdf-form" enctype="multipart/form-data">
+                <label for="pdf">Upload PDF:</label>
+                <input type="file" id="pdf" name="pdf" accept=".pdf" required>
+                <button type="submit">Submit & Process</button>
+            </form>
+
+            <form id="query-form">
+                <label for="query">Ask me anything:</label>
+                <input type="text" id="query" name="query" placeholder="Type your question..." required>
+                <button type="submit">Ask</button>
+            </form>
+        </div>
+
+        <div class="right">
+            <h1>ask about the document</h1>
+            <div class="messages" id="messages"></div>
+        </div>
+    </div>
+
+    <script>
+        const pdfForm = document.getElementById('pdf-form');
+        const queryForm = document.getElementById('query-form');
+        const messagesDiv = document.getElementById('messages');
+
+        pdfForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(pdfForm);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else {
+                    alert(data.error);
+                }
+            });
+        });
+
+        queryForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+
+            fetch('/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const userMessage = `<div class="user">${query}</div>`;
+                const assistantMessage = `<div class="assistant">${data.answer}</div>`;
+
+                messagesDiv.innerHTML += userMessage + assistantMessage;
+                document.getElementById('query').value = '';
+                messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll to the bottom
+            });
+        });
+    </script>
+</body>
+</html>
