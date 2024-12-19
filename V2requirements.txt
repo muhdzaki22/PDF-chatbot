@@ -1,0 +1,2 @@
+pip install llama-index-embeddings-huggingface
+pip install llama-index-llms-huggingface
