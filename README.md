@@ -1,4 +1,4 @@
-model_name = google/gemma-1.1-7b-it
+model_name = google/gemma-1.1-7b-it /n
 transformer name = BAAI/bge-small-en-v1.5
 
 
